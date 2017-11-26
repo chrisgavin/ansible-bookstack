@@ -1,0 +1,41 @@
+---
+- name: Install Git.
+  apt:
+    name: git
+    state: present
+  become: true
+
+- name: Download BookStack.
+  git:
+    repo: https://github.com/BookStackApp/BookStack.git
+    version: release
+    dest: "{{ bookstack_install_dir }}"
+    update: true
+  become: true
+
+- name: Install dependencies.
+  composer:
+    command: install
+    working_dir: "{{ bookstack_install_dir }}"
+  become: true
+
+- name: Set permissions on BookStack directories.
+  file:
+    path: "{{ item }}"
+    owner: www-data
+    group: www-data
+    recurse: true
+  with_items:
+    - "{{ bookstack_install_dir }}/storage/"
+    - "{{ bookstack_install_dir }}/public/uploads/"
+  become: true
+
+- name: Set BookStack config.
+  template:
+    src: env.env
+    dest: "{{ bookstack_install_dir }}/.env"
+  become: true
+
+- name: Run migrations.
+  command: "php {{ bookstack_install_dir }}/artisan migrate --force"
+  become: true

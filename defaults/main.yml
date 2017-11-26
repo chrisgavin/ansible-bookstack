@@ -1,0 +1,9 @@
+---
+bookstack_install_dir: /var/bookstack
+bookstack_application_key:
+bookstack_database_name: bookstack
+bookstack_database_username: bookstack
+bookstack_database_password: password
+bookstack_google_app_id: false
+bookstack_google_app_secret: false
+bookstack_url: "http://{{ inventory_hostname }}"

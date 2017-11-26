@@ -1,0 +1,35 @@
+---
+galaxy_info:
+  author: Chris Gavin <chris@chrisgavin.me>
+  description: An Ansible role to install the Bookstack wiki software.
+  license: GPL
+  min_ansible_version: 1.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+
+dependencies:
+  - role: geerlingguy.apache
+    apache_vhosts:
+      - servername: "{{ inventory_hostname }}"
+        documentroot: "{{ bookstack_install_dir }}/public/"
+  - role: geerlingguy.php-mysql
+    php_packages_extra:
+    - php7.0-tidy
+    - libapache2-mod-php7.0
+    php_upload_max_filesize: 128M
+    php_post_max_size: 128M
+    php_max_input_time: -1
+    php_max_execution_time: 600
+  - role: geerlingguy.mysql
+    mysql_databases:
+      - name: "{{ bookstack_database_name }}"
+        collation: utf8_general_ci
+        encoding: utf8
+    mysql_users:
+      - name: "{{ bookstack_database_username }}"
+        password: "{{ bookstack_database_password }}"
+        host: "localhost"
+        priv: "{{ bookstack_database_name }}.*:ALL"
+  - role: geerlingguy.composer
